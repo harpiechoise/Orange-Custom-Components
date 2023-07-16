@@ -105,3 +105,10 @@ class KernelInitalizer:
             gui.spin(self.random_normal_options, self.master, 'stddev',
                      label='Standard deviation', minv=0, maxv=10000, spinType=float, step=.1)
         self.random_normal_options.setVisible(True)
+
+
+class ActivationsGui:
+    activation = ''
+
+    def __init__(self, widget, master, control_area) -> None:
+        pass

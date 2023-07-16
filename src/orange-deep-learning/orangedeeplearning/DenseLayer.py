@@ -5,7 +5,6 @@ from keras.layers import Dense
 import Orange.data
 from tensorflow import dtypes
 from orangewidget.widget import OWBaseWidget, Input, Output
-from orangewidget.utils.widgetpreview import WidgetPreview
 from orangewidget import gui, settings
 from pprint import pformat
 from .utils import KernelInitalizer
