@@ -8,9 +8,10 @@ from orangewidget.widget import OWBaseWidget, Input, Output
 from orangewidget.utils.widgetpreview import WidgetPreview
 from orangewidget import gui, settings
 from pprint import pformat
+from .utils import KernelInitalizer
 
 
-class DenseLayer(OWBaseWidget):
+class DenseLayer(OWBaseWidget, KernelInitalizer):
     name = 'Dense Layer'
     description = 'Fully Connected Layer'
     icon = 'icons/dense.svg'
@@ -23,19 +24,16 @@ class DenseLayer(OWBaseWidget):
         output_layer = Output('Output layer', object)
 
     want_main_area = False
-    activation = ''
+    units = 0
 
     def __init__(self) -> None:
-        super().__init__()
+        OWBaseWidget.__init__(self)
         box = gui.widgetBox(self.controlArea, "Info")
-        self.infoa = gui.widgetLabel(
-            box, 'No data on input yet, waiting to get something.')
-        self.combo = gui.comboBox(box, self, 'activation', items=(
-            'Random Normal', 'Random Uniform'), callback=self.set_activation)
 
-    def set_activation(self):
-        print(self.activation)
-        print("CHANGED !")
+        gui.spin(box, self, value='units', minv=0,
+                 maxv=10_000_000, step=1, spinType=int, label='Number of Units ')
+
+        KernelInitalizer.__init__(self, box, self, self.controlArea)
 
     @Inputs.input_layer
     def set_layer(self, layer):
