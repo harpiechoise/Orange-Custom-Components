@@ -1,5 +1,6 @@
 from tensorflow import keras
 from keras.layers import Input as kinput
+from keras.layers import Dense
 import Orange.data
 from tensorflow import dtypes
 from orangewidget.widget import OWBaseWidget, Input, Output
