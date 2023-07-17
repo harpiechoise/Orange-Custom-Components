@@ -271,7 +271,7 @@ class Regularizers:
             'L2',
             'L1L2',
             'Orthogonal Regularizer'
-        ), label='Regularizer')
+        ), label='Regularizer', callback=self.set_regularizer)
 
         self.l1_options = gui.widgetBox(
             self.control_area, 'L1 Regularization Settings'
@@ -296,13 +296,13 @@ class Regularizers:
 
     def set_regularizer(self):
         self.clear_regularizer_ui()
-        if self.regularizer == 0:
+        if self.regularizer == 1:
             self.l1_options_gui()
-        elif self.regularizer == 1:
-            self.l2_options_gui()
         elif self.regularizer == 2:
-            self.l1l2_options_gui()
+            self.l2_options_gui()
         elif self.regularizer == 3:
+            self.l1l2_options_gui()
+        elif self.regularizer == 4:
             self.orthogonal_options_gui()
 
     def clear_regularizer_ui(self):
@@ -314,27 +314,27 @@ class Regularizers:
     def l1_options_gui(self):
         if not check_widgets(self.l1_options):
             gui.spin(self.l1_options, self.master, 'l1', minv=0,
-                     maxv=10_000_000, step=.01, label='L1')
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
         self.l1_options.setVisible(True)
 
     def l2_options_gui(self):
         if not check_widgets(self.l2_options):
             gui.spin(self.l2_options, self.master, 'l2', minv=0,
-                     maxv=10_000_000, step=.01, label='L2')
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
         self.l2_options.setVisible(True)
 
     def l1l2_options_gui(self):
         if not check_widgets(self.l1l2_options):
             gui.spin(self.l1l2_options, self.master, 'l1', minv=0,
-                     maxv=10_000_000, step=.01, label='L1')
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
             gui.spin(self.l1l2_options, self.master, 'l2', minv=0,
-                     maxv=10_000_000, step=.01, label='L2')
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
         self.l1l2_options.setVisible(True)
 
     def orthogonal_options_gui(self):
         if not check_widgets(self.orthogonal_options):
             gui.spin(self.orthogonal_options, self.master, 'factor',
-                     minv=0, maxv=10_000_000, step=.01, label='Factor')
+                     minv=0, maxv=10_000_000, step=.01, label='Factor', spinType=float)
             gui.comboBox(self.orthogonal_options, self.master,
                          'mode', items=('Rows', 'Columns'), label='Mode')
 
