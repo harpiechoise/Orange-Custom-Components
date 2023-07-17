@@ -255,6 +255,92 @@ class ActivationsGui:
             return activations.exponential
 
 
+class Regularizers:
+    regularizer = 0
+    l1 = 0
+    l2 = 0
+    factor = 0
+    mode = 0
+
+    def __init__(self, widget, master, control_area) -> None:
+        self.master = master
+        self.control_area = control_area
+        gui.comboBox(widget, master, 'regularizer', items=(
+            'None',
+            'L1',
+            'L2',
+            'L1L2',
+            'Orthogonal Regularizer'
+        ), label='Regularizer')
+
+        self.l1_options = gui.widgetBox(
+            self.control_area, 'L1 Regularization Settings'
+        )
+        self.l1_options.setVisible(False)
+
+        self.l2_options = gui.widgetBox(
+            self.control_area, 'L2 Regularization Settings'
+        )
+        self.l2_options.setVisible(False)
+
+        self.l1l2_options = gui.widgetBox(
+            self.control_area, 'L1L2 Regularization Settings'
+        )
+        self.l1l2_options.setVisible(False)
+
+        self.orthogonal_options = gui.widgetBox(
+            self.control_area, 'Orthogonal Regularizer Settings'
+        )
+
+        self.orthogonal_options.setVisible(False)
+
+    def set_regularizer(self):
+        self.clear_regularizer_ui()
+        if self.regularizer == 0:
+            self.l1_options_gui()
+        elif self.regularizer == 1:
+            self.l2_options_gui()
+        elif self.regularizer == 2:
+            self.l1l2_options_gui()
+        elif self.regularizer == 3:
+            self.orthogonal_options_gui()
+
+    def clear_regularizer_ui(self):
+        self.l1_options.setVisible(False)
+        self.l2_options.setVisible(False)
+        self.l1l2_options.setVisible(False)
+        self.orthogonal_options.setVisible(False)
+
+    def l1_options_gui(self):
+        if not check_widgets(self.l1_options):
+            gui.spin(self.l1_options, self.master, 'l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1')
+        self.l1_options.setVisible(True)
+
+    def l2_options_gui(self):
+        if not check_widgets(self.l2_options):
+            gui.spin(self.l2_options, self.master, 'l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2')
+        self.l2_options.setVisible(True)
+
+    def l1l2_options_gui(self):
+        if not check_widgets(self.l1l2_options):
+            gui.spin(self.l1l2_options, self.master, 'l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1')
+            gui.spin(self.l1l2_options, self.master, 'l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2')
+        self.l1l2_options.setVisible(True)
+
+    def orthogonal_options_gui(self):
+        if not check_widgets(self.orthogonal_options):
+            gui.spin(self.orthogonal_options, self.master, 'factor',
+                     minv=0, maxv=10_000_000, step=.01, label='Factor')
+            gui.comboBox(self.orthogonal_options, self.master,
+                         'mode', items=('Rows', 'Columns'), label='Mode')
+
+        self.orthogonal_options.setVisible(True)
+
+
 class CommonControls(KernelInitalizer, ActivationsGui):
     def __init__(self, widget, master, control_area) -> None:
         KernelInitalizer.__init__(
