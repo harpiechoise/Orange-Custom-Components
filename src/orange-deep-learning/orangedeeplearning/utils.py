@@ -427,32 +427,132 @@ class BiasRegularizers:
 
     def bias_l1_options_gui(self):
         if not check_widgets(self.bias_l1_options):
-            gui.spin(self.bias_l1_options, self.master, 'l1', minv=0,
+            gui.spin(self.bias_l1_options, self.master, 'bias_l1', minv=0,
                      maxv=10_000_000, step=.01, label='L1', spinType=float)
         self.bias_l1_options.setVisible(True)
 
     def bias_l2_options_gui(self):
         if not check_widgets(self.bias_l2_options):
-            gui.spin(self.bias_l2_options, self.master, 'l2', minv=0,
+            gui.spin(self.bias_l2_options, self.master, 'bias_l2', minv=0,
                      maxv=10_000_000, step=.01, label='L2', spinType=float)
         self.bias_l2_options.setVisible(True)
 
     def bias_l1l2_options_gui(self):
         if not check_widgets(self.bias_l1l2_options):
-            gui.spin(self.bias_l1l2_options, self.master, 'l1', minv=0,
+            gui.spin(self.bias_l1l2_options, self.master, 'bias_l1', minv=0,
                      maxv=10_000_000, step=.01, label='L1', spinType=float)
-            gui.spin(self.bias_l1l2_options, self.master, 'l2', minv=0,
+            gui.spin(self.bias_l1l2_options, self.master, 'bias_l2', minv=0,
                      maxv=10_000_000, step=.01, label='L2', spinType=float)
         self.bias_l1l2_options.setVisible(True)
 
     def bias_orthogonal_options_gui(self):
         if not check_widgets(self.bias_orthogonal_options):
-            gui.spin(self.bias_orthogonal_options, self.master, 'factor',
+            gui.spin(self.bias_orthogonal_options, self.master, 'bias_factor',
                      minv=0, maxv=10_000_000, step=.01, label='Factor', spinType=float)
             gui.comboBox(self.bias_orthogonal_options, self.master,
-                         'mode', items=('Rows', 'Columns'), label='Mode')
+                         'bias_mode', items=('Rows', 'Columns'), label='Mode')
 
         self.bias_orthogonal_options.setVisible(True)
+
+
+class ActivityRegularizer:
+    activity_regularizer = 0
+    activity_l1 = 0.01
+    activity_l2 = 0.01
+    activity_factor = 0.01
+    activity_mode = 0
+
+    def __init__(self, widget, master, control_area) -> None:
+        self.master = master
+        self.control_area = control_area
+        gui.comboBox(widget, master, 'activity_regularizer', items=(
+            'None',
+            'L1',
+            'L2',
+            'L1L2',
+            'Orthogonal Regularizer'
+        ), label='Activity Regularizer', callback=self.activity_set_regularizer)
+
+        self.activity_l1_options = gui.widgetBox(
+            self.control_area, 'L1 Activity Regularization Settings'
+        )
+        self.activity_l1_options.setVisible(False)
+
+        self.activity_l2_options = gui.widgetBox(
+            self.control_area, 'L2 Activity Regularization Settings'
+        )
+        self.activity_l2_options.setVisible(False)
+
+        self.activity_l1l2_options = gui.widgetBox(
+            self.control_area, 'L1L2 Activity Regularization Settings'
+        )
+        self.activity_l1l2_options.setVisible(False)
+
+        self.activity_orthogonal_options = gui.widgetBox(
+            self.control_area, 'Orthogonal Activity Regularizer Settings'
+        )
+
+        self.activity_orthogonal_options.setVisible(False)
+
+    def activity_set_regularizer(self):
+        self.activity_clear_regularizer_ui()
+        if self.activity_regularizer == 1:
+            self.activity_l1_options_gui()
+        elif self.activity_regularizer == 2:
+            self.activity_l2_options_gui()
+        elif self.activity_regularizer == 3:
+            self.activity_l1l2_options_gui()
+        elif self.activity_regularizer == 4:
+            self.activity_orthogonal_options_gui()
+
+    def make_activity_regularized(self):
+        if self.activity_regularizer == 1:
+            return regularizers.l1(l1=self.bias_l1)
+        elif self.activity_regularizer == 2:
+            return regularizers.l2(l2=self.bias_l2)
+        elif self.activity_regularizer == 3:
+            return regularizers.l1_l2(l1=self.bias_l1, l2=self.bias_l2)
+        elif self.activity_regularizer == 4:
+            if self.activity_mode == 0:
+                mode = 'rows'
+            else:
+                mode = 'columns'
+            return regularizers.orthogonal_regularizer(self.activity_factor, mode=mode)
+
+    def activity_clear_regularizer_ui(self):
+        self.activity_l1_options.setVisible(False)
+        self.activity_l2_options.setVisible(False)
+        self.activity_l1l2_options.setVisible(False)
+        self.activity_orthogonal_options.setVisible(False)
+
+    def activity_l1_options_gui(self):
+        if not check_widgets(self.activity_l1_options):
+            gui.spin(self.activity_l1_options, self.master, 'activity_l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
+        self.activity_l1_options.setVisible(True)
+
+    def activity_l2_options_gui(self):
+        if not check_widgets(self.activity_l2_options):
+            gui.spin(self.activity_l2_options, self.master, 'activity_l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
+        self.activity_l2_options.setVisible(True)
+
+    def activity_l1l2_options_gui(self):
+        if not check_widgets(self.activity_l1l2_options):
+            gui.spin(self.activity_l1l2_options, self.master, 'activity_l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
+            gui.spin(self.activity_l1l2_options, self.master, 'activity_l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
+        self.activity_l1l2_options.setVisible(True)
+
+    def activity_orthogonal_options_gui(self):
+        if not check_widgets(self.activity_orthogonal_options):
+            gui.spin(self.activity_orthogonal_options, self.master, 'activity_factor',
+                     minv=0, maxv=10_000_000, step=.01, label='Factor', spinType=float)
+            gui.comboBox(self.activity_orthogonal_options, self.master,
+                         'activity_mode', items=('Rows', 'Columns'), label='Mode')
+
+        self.activity_orthogonal_options.setVisible(True)
 
 
 class CommonControls(KernelInitalizer, ActivationsGui):
