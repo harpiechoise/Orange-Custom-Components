@@ -7,10 +7,10 @@ from tensorflow import dtypes
 from orangewidget.widget import OWBaseWidget, Input, Output
 from orangewidget import gui, settings
 from pprint import pformat
-from .utils import CommonControls, BiasInitalizer
+from .utils import CommonControls
 
 
-class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer):
+class DenseLayer(OWBaseWidget, CommonControls):
     name = 'Dense Layer'
     description = 'Fully Connected Layer'
     icon = 'icons/dense.svg'
@@ -24,7 +24,6 @@ class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer):
 
     want_main_area = False
     units = 0
-    use_bias = True
 
     def __init__(self) -> None:
         OWBaseWidget.__init__(self)
@@ -32,14 +31,12 @@ class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer):
 
         gui.spin(box, self, value='units', minv=0,
                  maxv=10_000_000, step=1, spinType=int, label='Number of Units ')
-        gui.checkBox(box, self, 'use_bias', label='Use Bias?')
 
         # KernelInitalizer.__init__(self, box, self, self.controlArea)
         # ActivationsGui.__init__(
         #    self, box, self, self.controlArea, self.set_initalizer)
 
         CommonControls.__init__(self, box, self, self.controlArea)
-        BiasInitalizer.__init__(self, box, self, self.controlArea)
 
     @Inputs.input_layer
     def set_layer(self, layer):
