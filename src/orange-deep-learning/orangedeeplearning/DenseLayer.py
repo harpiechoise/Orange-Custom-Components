@@ -7,10 +7,10 @@ from tensorflow import dtypes
 from orangewidget.widget import OWBaseWidget, Input, Output
 from orangewidget import gui, settings
 from pprint import pformat
-from .utils import CommonControls, BiasInitalizer, Regularizers
+from .utils import CommonControls, BiasInitalizer, Regularizers, BiasRegularizers
 
 
-class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer, Regularizers):
+class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer, Regularizers, BiasRegularizers):
     name = 'Dense Layer'
     description = 'Fully Connected Layer'
     icon = 'icons/dense.svg'
@@ -41,6 +41,7 @@ class DenseLayer(OWBaseWidget, CommonControls, BiasInitalizer, Regularizers):
         CommonControls.__init__(self, box, self, self.controlArea)
         BiasInitalizer.__init__(self, box, self, self.controlArea)
         Regularizers.__init__(self, box, self, self.controlArea)
+        BiasRegularizers.__init__(self, box, self, self.controlArea)
 
     @Inputs.input_layer
     def set_layer(self, layer):

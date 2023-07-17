@@ -1,7 +1,7 @@
 from orangewidget import gui
 from PyQt5 import QtWidgets
 from tensorflow import keras
-from keras import initializers
+from keras import initializers, regularizers
 from keras.layers import Activation, Lambda
 from keras import activations
 
@@ -305,6 +305,20 @@ class Regularizers:
         elif self.regularizer == 4:
             self.orthogonal_options_gui()
 
+    def make_regularizer(self):
+        if self.regularizer == 1:
+            return regularizers.l1(l1=self.l1)
+        elif self.regularizer == 2:
+            return regularizers.l2(l2=self.l2)
+        elif self.regularizer == 3:
+            return regularizers.l1_l2(l1=self.l1, l2=self.l2)
+        elif self.regularizer == 4:
+            if self.mode == 0:
+                mode = 'rows'
+            else:
+                mode = 'columns'
+            return regularizers.orthogonal_regularizer(self.factor, mode=mode)
+
     def clear_regularizer_ui(self):
         self.l1_options.setVisible(False)
         self.l2_options.setVisible(False)
@@ -339,6 +353,106 @@ class Regularizers:
                          'mode', items=('Rows', 'Columns'), label='Mode')
 
         self.orthogonal_options.setVisible(True)
+
+
+class BiasRegularizers:
+    bias_regularizer = 0
+    bias_l1 = 0.01
+    bias_l2 = 0.01
+    bias_factor = 0.01
+    bias_mode = 0
+
+    def __init__(self, widget, master, control_area) -> None:
+        self.master = master
+        self.control_area = control_area
+        gui.comboBox(widget, master, 'bias_regularizer', items=(
+            'None',
+            'L1',
+            'L2',
+            'L1L2',
+            'Orthogonal Regularizer'
+        ), label='Bias Regularized', callback=self.bias_set_regularizer)
+
+        self.bias_l1_options = gui.widgetBox(
+            self.control_area, 'L1 Bias Regularization Settings'
+        )
+        self.bias_l1_options.setVisible(False)
+
+        self.bias_l2_options = gui.widgetBox(
+            self.control_area, 'L2 Bias Regularization Settings'
+        )
+        self.bias_l2_options.setVisible(False)
+
+        self.bias_l1l2_options = gui.widgetBox(
+            self.control_area, 'L1L2 Bias Regularization Settings'
+        )
+        self.bias_l1l2_options.setVisible(False)
+
+        self.bias_orthogonal_options = gui.widgetBox(
+            self.control_area, 'Orthogonal Bias Regularizer Settings'
+        )
+
+        self.bias_orthogonal_options.setVisible(False)
+
+    def bias_set_regularizer(self):
+        self.bias_clear_regularizer_ui()
+        if self.bias_regularizer == 1:
+            self.bias_l1_options_gui()
+        elif self.bias_regularizer == 2:
+            self.bias_l2_options_gui()
+        elif self.bias_regularizer == 3:
+            self.bias_l1l2_options_gui()
+        elif self.bias_regularizer == 4:
+            self.bias_orthogonal_options_gui()
+
+    def make_bias_regularized(self):
+        if self.bias_regularizer == 1:
+            return regularizers.l1(l1=self.bias_l1)
+        elif self.bias_regularizer == 2:
+            return regularizers.l2(l2=self.bias_l2)
+        elif self.bias_regularizer == 3:
+            return regularizers.l1_l2(l1=self.bias_l1, l2=self.bias_l2)
+        elif self.bias_regularizer == 4:
+            if self.bias_mode == 0:
+                mode = 'rows'
+            else:
+                mode = 'columns'
+            return regularizers.orthogonal_regularizer(self.bias_factor, mode=mode)
+
+    def bias_clear_regularizer_ui(self):
+        self.bias_l1_options.setVisible(False)
+        self.bias_l2_options.setVisible(False)
+        self.bias_l1l2_options.setVisible(False)
+        self.bias_orthogonal_options.setVisible(False)
+
+    def bias_l1_options_gui(self):
+        if not check_widgets(self.bias_l1_options):
+            gui.spin(self.bias_l1_options, self.master, 'l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
+        self.bias_l1_options.setVisible(True)
+
+    def bias_l2_options_gui(self):
+        if not check_widgets(self.bias_l2_options):
+            gui.spin(self.bias_l2_options, self.master, 'l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
+        self.bias_l2_options.setVisible(True)
+
+    def bias_l1l2_options_gui(self):
+        if not check_widgets(self.bias_l1l2_options):
+            gui.spin(self.bias_l1l2_options, self.master, 'l1', minv=0,
+                     maxv=10_000_000, step=.01, label='L1', spinType=float)
+            gui.spin(self.bias_l1l2_options, self.master, 'l2', minv=0,
+                     maxv=10_000_000, step=.01, label='L2', spinType=float)
+        self.bias_l1l2_options.setVisible(True)
+
+    def bias_orthogonal_options_gui(self):
+        if not check_widgets(self.bias_orthogonal_options):
+            gui.spin(self.bias_orthogonal_options, self.master, 'factor',
+                     minv=0, maxv=10_000_000, step=.01, label='Factor', spinType=float)
+            gui.comboBox(self.bias_orthogonal_options, self.master,
+                         'mode', items=('Rows', 'Columns'), label='Mode')
+
+        self.bias_orthogonal_options.setVisible(True)
 
 
 class CommonControls(KernelInitalizer, ActivationsGui):
